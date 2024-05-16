@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use App\Models\Comment;
 use App\Models\Speaker;
 use App\Models\Question;
 use App\Models\Coordinator;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Meeting extends Model
@@ -32,10 +35,24 @@ class Meeting extends Model
         'meeting_link',
     ];
 
+    protected function startTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => Carbon::parse($value)->format('H:i'),
+        );
+    }
+
+    protected function endTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn($value) => Carbon::parse($value)->format('H:i'),
+        );
+    }
+
+    protected $appends = ['start_time', 'end_time'];
+
     protected $casts = [
-        'meeting_date' => 'datetime',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'meeting_date' => 'date',
     ];
 
     public function getRouteKeyName()
@@ -82,6 +99,32 @@ class Meeting extends Model
         return $this->hasMany(Speaker::class, 'meeting_id', 'id');
     }
 
+    // scope that check whether the meeting is active or not
+    public function scopeActive($query)
+    {
+        return $query->whereDate('meeting_date', date('Y-m-d'));
+    }
+
+    // scope that check whether the meeting is upcoming or not
+    public function scopeUpcoming($query)
+    {
+        return $query->whereDate('meeting_date', '>', date('Y-m-d'))
+            ->orWhere(function ($query) {
+                $query->whereDate('meeting_date', date('Y-m-d'))
+                    ->whereTime('start_time', '>', date('H:i:s'));
+            });
+    }
+
+    // scope that check whether the meeting is past or not
+    public function scopePast($query)
+    {
+        return $query->whereDate('meeting_date', '<', date('Y-m-d'))
+            ->orWhere(function ($query) {
+                $query->whereDate('meeting_date', date('Y-m-d'))
+                    ->whereTime('end_time', '<', date('H:i:s'));
+            });
+    }
+
     /**
      * Get all of the comments for the Meeting
      *
@@ -100,5 +143,21 @@ class Meeting extends Model
     public function comments(): HasManyThrough
     {
         return $this->hasManyThrough(Comment::class, Question::class);
+    }
+    
+    public function attendees(): BelongsToMany
+    {
+        return $this->belongsToMany(Youth::class, 'meeting_youth', 'youth_id', 'meeting_id')
+            ->withPivot(['status','created_at'])
+            ->withTimestamps();
+    }
+
+    public function delete()
+    {
+        $this->speakers()->delete();
+        $this->questions()->delete();
+        $this->comments()->delete();
+        $this->attendees()->detach();
+        return parent::delete();
     }
 }

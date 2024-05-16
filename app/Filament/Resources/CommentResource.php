@@ -91,13 +91,13 @@ class CommentResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->role=='Youth'){
-            return parent::getEloquentQuery()->where('youth_id',auth()->user()->youthDetails->id);
+            return parent::getEloquentQuery()->where('youth_id',auth()->user()->youthDetails->id)->latest();
         } 
         else if(auth()->user()->role == 'Coordinator'){
-            return parent::getEloquentQuery()->whereRelation('question.meeting','coordinator_id',auth()->user()->coordinatorDetails->id);
+            return parent::getEloquentQuery()->whereRelation('question.meeting','coordinator_id',auth()->user()->coordinatorDetails->id)->latest();
         }
         else{
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->latest();
         }
     }
 }

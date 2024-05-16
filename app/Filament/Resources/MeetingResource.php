@@ -38,6 +38,7 @@ use App\Filament\Resources\MeetingResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MeetingResource\RelationManagers;
 use App\Filament\Resources\MeetingResource\RelationManagers\SpeakersRelationManager;
+use App\Filament\Resources\MeetingResource\RelationManagers\AttendancesRelationManager;
 
 class MeetingResource extends Resource
 {
@@ -100,7 +101,7 @@ class MeetingResource extends Resource
                 MarkdownEditor::make('moto')
                     ->required()
                     ->columnSpanFull()
-                    ->label(__('Moto')),
+                    ->label(__('Theme')),
                 RichEditor::make('description')
                     ->columnSpanFull()
                     ->label(__('Description')),
@@ -134,6 +135,7 @@ class MeetingResource extends Resource
                     ->description(fn (Meeting $record): string => $record->venue)
                     ->searchable()
                     ->sortable(),
+                TextCOlumn::make('attendees_count')->counts('attendees')->label('Attendance'),
                 TextColumn::make('meeting_date')->date()
                     ->description(fn (Meeting $record): string => $record->time)
                     ->searchable()
@@ -192,7 +194,7 @@ class MeetingResource extends Resource
                 TextEntry::make('title'),
                 TextEntry::make('location'),
                 TextEntry::make('venue'),
-                TextEntry::make('moto'),
+                TextEntry::make('moto')->label('Meeting Theme'),
                 TextEntry::make('coordinator.name')
                     ->label('Coordinator'),
                 TextEntry::make('meeting_date'),
@@ -208,7 +210,8 @@ class MeetingResource extends Resource
     public static function getRelations(): array
     {
         return [
-            SpeakersRelationManager::class
+            SpeakersRelationManager::class,
+            AttendancesRelationManager::class
         ];
     }
     
@@ -224,10 +227,10 @@ class MeetingResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->role == 'Coordinator'){
-            return parent::getEloquentQuery()->whereRelation('coordinator','id',auth()->user()->coordinatorDetails->id);
+            return parent::getEloquentQuery()->whereRelation('coordinator','id',auth()->user()->coordinatorDetails->id)->latest();
         }
         else{
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->latest();
         }
     }
 }

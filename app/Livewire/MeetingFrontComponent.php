@@ -72,7 +72,7 @@ class MeetingFrontComponent extends Component
             'youth_id' => auth()->user()->youthDetails->id,
             'meeting_id' => $this->meeting->id,
         ]);
-        return redirect()->route('meeting.details',$this->meeting->slug);
+        return redirect()->route('meetings.details',$this->meeting->slug);
     }
 
     public function mount(Meeting $meeting)

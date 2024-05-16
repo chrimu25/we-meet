@@ -17,9 +17,9 @@ crossorigin="anonymous">
           <h6>{{ $meeting->moto }}</h6>
           <h2>{{ $meeting->title }}</h2>
           <div class="d-flex justify-content-center align-items-center">
-            <span class="badge mr-2 badge-pill badge-{{ $meeting->meeting_date->isFuture() ? 'warning' : 'danger' }}">
+            {{-- <span class="badge mr-2 badge-pill badge-{{ $meeting->meeting_date->isFuture() ? 'warning' : 'danger' }}">
               {{ $meeting->meeting_date->isFuture() ? 'Upcoming' : 'Past Event' }}
-            </span>
+            </span> --}}
             <span class="badge badge-pill badge-primary">
               {{ $meeting->meeting_date->format('jS F, Y') }}
             </span>
@@ -46,7 +46,7 @@ crossorigin="anonymous">
   })
 </script>
 <script>
-  var countDownDate = new Date("{{ $meeting->meeting_date->format('Y-m-d').' '.$meeting->start_time->format('H:i:s') }}").getTime();
+  var countDownDate = new Date("{{ $meeting->meeting_date->format('Y-m-d').' '.$meeting->start_time }}").getTime();
   var x = setInterval(function() {
     var now = new Date().getTime();
     var distance = countDownDate - now;

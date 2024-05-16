@@ -2,8 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Question;
 use App\Models\User;
+use App\Models\Meeting;
+use App\Models\Question;
 use Illuminate\Auth\Access\Response;
 
 class QuestionPolicy
@@ -31,7 +32,7 @@ class QuestionPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role == 'Youth';
+        return $user->role == 'Youth' && Meeting::active()->exists();
     }
 
     /**

@@ -10,12 +10,13 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\YouthResource\Pages;
+use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\YouthResource\RelationManagers;
-use Filament\Tables\Columns\TextColumn;
 
 class YouthResource extends Resource
 {
@@ -75,11 +76,20 @@ class YouthResource extends Resource
                     ->label('Sector:'),
                 TextEntry::make('cell')
                     ->label('Cell:'),
+                RepeatableEntry::make('attendedMeetings')
+                    ->label('Attended Meetings')
+                    ->schema([
+                        TextEntry::make('title'),
+                        TextEntry::make('venue'),
+                        TextEntry::make('meeting_date')
+                            ->columnSpan(2),
+                    ])
+                    ->columns(1)
             ])
             ->columns(1)
             ->inlineLabel();
     }
-    
+
     public static function getRelations(): array
     {
         return [

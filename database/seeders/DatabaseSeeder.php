@@ -21,6 +21,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'role'=>'Admin'
         ]);
-        Coordinator::factory(4)->create();
+        // Coordinator::factory(4)->create();
     }
 }

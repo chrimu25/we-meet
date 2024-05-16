@@ -29,12 +29,12 @@
             <div class="col-lg-12">
               <div class="row grid">
                 @forelse ($meetings as $meeting)
-                <div class="col-lg-4 templatemo-item-col all {{ $meeting->meeting_date->isFuture() ? 'upcoming' : 'recent' }}">
+                <div class="col-lg-4 templatemo-item-col all {{ $meeting->upcoming || $meeting->active ? 'upcoming' : 'recent' }}">
                   <div class="meeting-item">
                     <div class="thumb">
-                      <div class="price">
-                        <span>{{ $meeting->meeting_date->isFuture() ? 'Upcoming' : 'Recent' }}</span>
-                      </div>
+                      {{-- <div class="price">
+                        <span>{{ $meeting->meeting_date > today() ? 'Upcoming' : ($meeting->meeting_date == date('Y-m-d') ? 'Happening' : 'Past Event')  }}</span>
+                      </div> --}}
                       <a href="{{ route('meetings.details',$meeting->slug) }}">
                         <img src="{{ asset('storage/'.$meeting->cover_image) }}" 
                         style="max-height: 300px!important; width: 100%!important; object-fit:cover"
@@ -43,8 +43,8 @@
                     </div>
                     <div class="down-content">
                         <div class="d-flex">
-                          <div class="date">
-                            <h6>{{ $meeting->meeting_date->format('M') }} <span>{{ $meeting->meeting_date->format('d') }}</span></h6>
+                          <div class="date" style="width: 90px">
+                            <h6>{{ $meeting->meeting_date->format('Y M') }} <span>{{ $meeting->meeting_date->format('d') }}</span></h6>
                           </div>
                           <a href="{{ route('meetings.details',$meeting->slug) }}"><h4>{{ $meeting->title }}</h4></a>
                       </div>

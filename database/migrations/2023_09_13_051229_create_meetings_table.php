@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('meeting_date');
             $table->string('start_time');
             $table->string('end_time');
-            $table->foreignId('coordinator_id')->constrained('coordinators');
+            $table->foreignId('coordinator_id')->constrained('coordinators')->cascadeOnDelete();
             $table->string('cover_image');
             $table->text('meeting_link')->nullable();
             $table->timestamps();

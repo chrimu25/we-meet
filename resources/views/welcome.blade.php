@@ -100,11 +100,9 @@ https://templatemo.com/tm-569-edu-meeting
         <div class="categories">
           <h4>Meeting Catgories</h4>
           <ul>
-            <li><a href="#">Sed tempus enim leo</a></li>
-            <li><a href="#">Aenean molestie quis</a></li>
-            <li><a href="#">Cras et metus vestibulum</a></li>
-            <li><a href="#">Nam et condimentum</a></li>
-            <li><a href="#">Phasellus nec sapien</a></li>
+            @foreach ($meetings as $item)                
+            <li><a href="{{ route('meetings.details',$item->slug) }}">{{ $item->title }}</a></li>
+            @endforeach
           </ul>
           <div class="main-button-red">
             <a href="{{ route('meetings') }}">All Upcoming Meetings</a>
@@ -118,7 +116,7 @@ https://templatemo.com/tm-569-edu-meeting
             <div class="meeting-item">
               <div class="thumb">
                 <div class="price">
-                  <span>{{ $meeting->meeting_date->isFuture() ? 'Upcoming' : 'Past Event' }}</span>
+                  <span>Upcoming</span>
                 </div>
                 <a href="{{ route('meetings.details',$meeting->slug) }}">
                   <img src="{{ asset('storage/'.$meeting->cover_image) }}" 

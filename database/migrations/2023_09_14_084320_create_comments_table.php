@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('question_id')->constrained();
-            $table->foreignId('youth_id')->constrained();
+            $table->foreignId('question_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('youth_id')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Comment::class, 'parent_id')->nullable()->constrained('comments');
             $table->text('comment');
             $table->string('status')->default(Status::DEFAULT->value);

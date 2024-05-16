@@ -50,4 +50,10 @@ class Question extends Model
     {
         return $this->hasMany(Comment::class, 'question_id', 'id');
     }
+
+    public function delete()
+    {
+        $this->comments()->delete();
+        return parent::delete();
+    }
 }

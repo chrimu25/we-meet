@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -30,6 +31,7 @@ class QuestionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-m-chat-bubble-bottom-center-text';
     protected static ?int $navigationSort = 3;
+    protected static ?string $navigationLabel = "Questions & Ideas";
 
     public static function form(Form $form): Form
     {
@@ -46,9 +48,11 @@ class QuestionResource extends Resource
                 TextColumn::make('meeting.title')->words(5)->label('Meeting')->searchable()->sortable(),
                 TextColumn::make('youth.loginInfo.name')->label('Attendee')->searchable()->sortable(),
                 TextColumn::make('question')->searchable()->words(3),
-                TextColumn::make('reply')->html()->label('Provided Reply')->searchable()->words(3),
+                TextColumn::make('reply')->html()->label('Provided Reply')->visible(function($record){
+                    return Auth::user()->role == 'Youth' ? true : false;
+                })->searchable()->words(3),
                 TextColumn::make('comments_count')->label('Comments')->counts('comments'),
-                TextColumn::make('created_at')->label('Date')->date(),
+                TextColumn::make('created_at')->label('Date')->datetime(),
             ])
             ->filters([
                 //
@@ -64,9 +68,11 @@ class QuestionResource extends Resource
                 ->action(function($record, array $data){
                     $record->update(['reply' => $data['reply_given']]);
                 })
-                ->color('success')->visible(function($record){
+                ->color('success')
+                ->visible(function($record){
                     return empty($record->reply);
-                }),
+                })
+                ,
                 DeleteAction::make()->iconButton(),
             ])
             ->bulkActions([
@@ -106,13 +112,13 @@ class QuestionResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         if(auth()->user()->role=='Youth'){
-            return parent::getEloquentQuery()->where('youth_id',auth()->user()->youthDetails->id);
+            return parent::getEloquentQuery()->where('youth_id',auth()->user()->youthDetails->id)->latest();
         } 
         else if(auth()->user()->role == 'Coordinator'){
-            return parent::getEloquentQuery()->whereRelation('meeting','coordinator_id',auth()->user()->coordinatorDetails->id);
+            return parent::getEloquentQuery()->whereRelation('meeting','coordinator_id',auth()->user()->coordinatorDetails->id)->latest();
         }
         else{
-            return parent::getEloquentQuery();
+            return parent::getEloquentQuery()->latest();
         }
     }
 }

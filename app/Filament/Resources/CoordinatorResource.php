@@ -114,5 +114,10 @@ class CoordinatorResource extends Resource
         return [
             'index' => ManageCoordinators::route('/'),
         ];
-    }    
+    }   
+    
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->latest();
+    }
 }

@@ -66,4 +66,10 @@ class Comment extends Model
     {
         return $this->hasMany(Comment::class, 'id', 'parent_id');
     }
+
+    public function delete()
+    {
+        $this->replies()->delete();
+        return parent::delete();
+    }
 }

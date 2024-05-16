@@ -112,5 +112,10 @@ class EnquiryResource extends Resource
         return [
             'index' => Pages\ManageEnquiries::route('/'),
         ];
-    }    
+    }   
+    
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->latest();
+    }
 }
