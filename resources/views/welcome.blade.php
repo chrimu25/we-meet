@@ -100,9 +100,13 @@ https://templatemo.com/tm-569-edu-meeting
         <div class="categories">
           <h4>Meeting Catgories</h4>
           <ul>
-            @foreach ($meetings as $item)                
-            <li><a href="{{ route('meetings.details',$item->slug) }}">{{ $item->title }}</a></li>
-            @endforeach
+            @forelse ($meetings as $item)
+            <li><a href="{{ route('meetings.details',$item->slug) }}">{{ $item->title }}</a></li>              
+            @empty
+              <li>
+                <h4>No upcoming meetings</h4>
+              </li>
+            @endforelse
           </ul>
           <div class="main-button-red">
             <a href="{{ route('meetings') }}">All Upcoming Meetings</a>
@@ -172,7 +176,6 @@ https://templatemo.com/tm-569-edu-meeting
                   @enderror
                 </fieldset>
                 </div>
-                <div class="col-lg-4">
                   <fieldset>
                     <input name="subject" type="text" id="subject" value="{{ old('subject') }}" placeholder="SUBJECT...*" required="">
                     @error('subject')

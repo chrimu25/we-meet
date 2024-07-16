@@ -23,6 +23,7 @@ Route::get('/', function () {
     return view('welcome', compact('meetings'));
 });
 Route::post('enquiry',EnquiryController::class)->name('contact.save');
+
 Route::get('meetings', function(){
     $meetings = Meeting::latest()->simplePaginate(12);
     return view('meetings', compact('meetings'));
